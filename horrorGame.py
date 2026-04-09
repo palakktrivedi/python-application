@@ -110,9 +110,91 @@ def use_item(item):
         print(f"You do not have the {item}.")
         return
     
-    if item == "knife" and current_room = "dining":
-        
+    # check for using knife in the dining room
+    if item == "knife" and current_room == "dining":
+        if rooms["dining"]["bound"]:
+            print("You freed yourself from the chair with the knife!")
+            rooms["dining"]["exits"]["west"] = "hallway"
+            rooms["dining"]["bound"] = False
+        else:
+            print("You have already freed yourself.")
+    else:
+        print(f"You can't use the {item} here.")
+
+    # check for using key in the hallway
+    if item == "key" and current_room == "hallway":
+        if rooms["hallway"]["locked"]:
+            print("You unlock the door to the east!")
+            rooms["hallway"]["exits"]["east"] = "bedroom"
+            rooms["hallway"]["locked"] = False
+        else:
+            print("The door is already unlocked.")
+    else:
+        print(f"You can't use the {item} here.")
+
+    # check for using keyring in the foyer
+    if item == "keyring" and current_room == "foyer":
+        if rooms["foyer"]["locked"]:
+            print("You unlock the front door!")
+            rooms["foyer"]["exits"]["north"] = "outside"
+            rooms["foyer"]["locked"] = False
+        else:
+            print("The door is already unlocked.")
+    else:
+        print(f"You can't use the {item} here.")
 
 
+# breaks down the command
+def process_command(command):
+    words = command.split()
+
+    if len(words) == 0:
+        return
+    
+    if words[0] == "go" and len(words) > 1:
+        move(words[1])
+    
+    elif words[0] == "take" and len(words) > 1:
+        take_item(words[1])
+
+    elif words[0] == "look":
+        show_status
+
+    elif words[0] == "inventory":
+        if len(inventory) == 0:
+            print("You are carrying nothing.")
+        else:
+            print("You are carrying:")
+            for item in inventory:
+                print(f"- {item}")
+    
+    elif words[0] == "drop" and len(words) > 1:
+        drop_item(words[1])
+
+    elif words[0] == "use" and len(words) > 1:
+        use_item(words[1])
+
+    elif words[0] == "quit":
+        return False
+    
+    else:
+        print("Invalid command.")
+
+    return True
 
 
+# === Game Loop ===
+def play_game():
+    print("=== MURDER HOUSE SURVIVAL GAME ===")
+
+    playing = True
+    while playing:
+        show_status()
+        command = get_command()
+        playing = process_command(command)
+
+    print("You use the keyring to start the car. The engine roars as you speed out of the driveway.\n\n You have escaped the murder house! Thanks for playing!")
+
+
+# start game
+play_game()
