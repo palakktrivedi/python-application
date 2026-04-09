@@ -3,13 +3,13 @@
 rooms = {
     "dining": {
         "description": "You wake up strapped into a chair at a dining table you don't recognize."
-          "There is a hallway opening to your left and a knife next to a dinner plate of rotting food in front of you.",
+          "\nThere is a hallway opening to your west and a knife next to a dinner plate of rotting food in front of you.",
         "items": ["knife"],
         "exits": {},
         "bound": True
     },
     "hallway": {
-        "description": "A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers.",
+        "description": "A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers. \nUnder the lamp that flickers an ominous yellow light you see a glimmer of metal that appears to be a key!",
         "items": ["key"],
         "exits": {},
         "locked": True
@@ -54,6 +54,16 @@ def show_status():
         else:
             print("there is an open door to the east.")
 
+    if current_room == "dining":
+        if rooms["dining"]["bound"]:
+            print("You wake up strapped into a chair at a dining table you don't recognize."
+            "\nThere is a hallway opening to your west and a knife next to a dinner plate of rotting food in front of you.")
+        else:
+            print("You are standing in the dining room. The ropes that bound you lay torn on the chair behind you.")
+    
+    else:
+        print(rooms[current_room]["description"])
+
 # gets the command from the user of what they want to do next
 def get_command():
     return input("\nWhat do you want to do? ").lower()
@@ -62,7 +72,7 @@ def get_command():
 def move(direction):
     global current_room
 
-    if direction not in roos[current_room]["exits"]:
+    if direction not in rooms[current_room]["exits"]:
         print("You can't go that way.")
         return
     
@@ -79,6 +89,7 @@ def move(direction):
 
     current_room = next_room
     print(f"You move {direction}.")
+    show_status()
 
 # removes item from the room and adds to inventory
 def take_item(item):
@@ -178,13 +189,16 @@ def play_game():
     print("=== MURDER HOUSE SURVIVAL GAME ===")
 
     playing = True
+
+    # shows room description once at start
+    show_status()
+
     while playing:
-        show_status()
         command = get_command()
         playing = process_command(command)
 
-    print("You use the keyring to start the car. The engine roars as you speed out of the driveway.\n\n You have escaped the murder house! Thanks for playing!")
-
+    print("You use the keyring to start the car. The engine roars as you speed out of the driveway.\n\n")
+    print("You have escaped the murder house! Thanks for playing!\n\n")
 
 # start game
 play_game()
