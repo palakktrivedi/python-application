@@ -5,13 +5,13 @@ rooms = {
         "description": "You wake up strapped into a chair at a dining table you don't recognize."
           "There is a hallway opening to your left and a knife next to a dinner plate of rotting food in front of you.",
         "items": ["knife"],
-        "exits": {"west": "hallway"},
+        "exits": {},
         "bound": True
     },
     "hallway": {
         "description": "A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers.",
         "items": ["key"],
-        "exits": {"east": "bedroom"},
+        "exits": {},
         "locked": True
     },
     "bedroom": {
@@ -62,29 +62,23 @@ def get_command():
 def move(direction):
     global current_room
 
-    if direction in rooms[current_room]["exits"]:
-        next_room = rooms[current_room]["exits"][direction]
+    if direction not in roos[current_room]["exits"]:
+        print("You can't go that way.")
+        return
+    
+    next_room = rooms[current_room]["exits"][direction]
 
         # check for locked door (hallway)
-        if next_room == "bedroom" and "key" not in inventory:
-            print("The door is locked. You need a key.")
-        else:
-            current_room = next_room
-            print(f"You move {direction}.")
-    else:
-        print("You can't go that way.")
+    if next_room == "bedroom" and rooms["hallway"]["locked"]:
+        print("The door is locked. You need a key.")
+        return
+    
+    if next_room == "outside" and rooms["foyer"]["locked"]:
+        print("The front door is locked. You need to find the homeowner's keyring.")
+        return
 
-    if direction in rooms[current_room]["exits"]:
-        next_room = rooms[current_room]["exits"][direction]
-
-        # check for locked door (foyer)
-        if next_room == "foyer" and "keyring" not in inventory:
-            print("The door is locked. You need to find the homeowner's keyring.")
-        else:
-            current_room = next_room
-            print(f"You move {direction}.")
-    else:
-        print("You can't go that way.")
+    current_room = next_room
+    print(f"You move {direction}.")
 
 # removes item from the room and adds to inventory
 def take_item(item):
@@ -154,7 +148,7 @@ def process_command(command):
         take_item(words[1])
 
     elif words[0] == "look":
-        show_status
+        show_status()
 
     elif words[0] == "inventory":
         if len(inventory) == 0:
