@@ -118,22 +118,18 @@ def use_item(item):
             rooms["dining"]["bound"] = False
         else:
             print("You have already freed yourself.")
-    else:
-        print(f"You can't use the {item} here.")
 
     # check for using key in the hallway
-    if item == "key" and current_room == "hallway":
+    elif item == "key" and current_room == "hallway":
         if rooms["hallway"]["locked"]:
             print("You unlock the door to the east!")
             rooms["hallway"]["exits"]["east"] = "bedroom"
             rooms["hallway"]["locked"] = False
         else:
             print("The door is already unlocked.")
-    else:
-        print(f"You can't use the {item} here.")
 
     # check for using keyring in the foyer
-    if item == "keyring" and current_room == "foyer":
+    elif item == "keyring" and current_room == "foyer":
         if rooms["foyer"]["locked"]:
             print("You unlock the front door!")
             rooms["foyer"]["exits"]["north"] = "outside"
