@@ -1,3 +1,5 @@
+import textwrap
+
 # === Game Data ===
 
 rooms = {
@@ -16,7 +18,7 @@ rooms = {
     },
     "bedroom": {
         "description": "You've entered what appears to be the homeowner's bedroom. The room is filthy, with a pungent rotting smell emanating from dark brown stains on the walls.",
-        "items": ["photograph", "bills", "revolver"],
+        "items": ["photograph", "bills"],
         "exits": {"east": "foyer"}
     },
     "foyer": {
@@ -35,13 +37,17 @@ rooms = {
 inventory = []
 current_room = "dining"
 
+found_letter = False
+found_revolver = False
+bullet_count = 8
+
 
 # === Functions ===
 
 # shows user what room they're in, what they can see, inventory and what items the room contains
 def show_status():
     print("\n")
-    print(f"You are in the {current_room}.")
+    # print(f"You are in the {current_room}.")
 
     # dining room description changes after escape
     if current_room == "dining":
@@ -49,14 +55,14 @@ def show_status():
             print("You wake up strapped into a chair at a dining table you don't recognize."
             "\nThere is a hallway opening to your west and a knife next to a dinner plate of rotting food in front of you.")
         else:
-            print("You are standing in the dining room. The ropes that bound you lay torn on the chair behind you.")
+            print("You are standing in the dining room. The ropes that bound you lay torn on the chair behind you. There is a hallway to the west.")
     
     # hallway description
     elif current_room == "hallway":
         print("A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers.  \nUnder the lamp that flickers an ominous yellow light you see a glimmer of metal that appears to be a key!")
 
         if rooms["hallway"]["locked"]:
-            print("Thre is a locked door to the east.")
+            print("There is a locked door to the east.")
         else:
             print("The door to the east is open.")
 
@@ -117,6 +123,8 @@ def drop_item(item):
 
 # allows player to use items they find for their specific purpose
 def use_item(item):
+    global found_letter, found_revolver, bullet_count
+    
     if item not in inventory:
         print(f"You do not have the {item}.")
         return
@@ -147,6 +155,62 @@ def use_item(item):
             rooms["foyer"]["locked"] = False
         else:
             print("The door is already unlocked.")
+
+    # check for using photograph in the bedroom
+    elif item == "photograph":
+        print(f"This {item} depicts a tall, lanky man in his late 20's scowling in between what appears to be his parents. The father, holding a rifle, has a scowl to match the young man's and the mother's eyes are deadpan into the camera. On the young man's belt is a small holster from which glints the hilt of a revolver.")
+
+    # check for using bills in the bedroom
+    elif item == "bills":
+        print("There are stacks of several overdue bills littering the desk in the bedroom.") 
+        print("As you sift through them, you see notices of eviction, credit cards under various names, as well as an oil-stained letter tucked underneath it all.")
+
+        if not found_letter:
+            rooms["bedroom"]["items"].append("letter")
+            found_letter = True
+
+    # check for using letter once player has used bills
+    elif item == "letter":
+        if not found_letter:
+            print("You haven't found any letter yet.")
+            return
+    
+        print("The letter is frayed and delicate at its seams, indicating perhaps that it has been opened and closed many times. In it appears to be a letter from the son to his father.")
+        
+        message = """
+Pop,
+I can't live this way no more. Life on the farm was never for me.
+Please let Mama know I love her and that even if I can't see her again with God,
+I am happy to be done with this place.
+
+Peter
+
+P.S. Sorry for going through your desk Pop. I promise I ain't touch nothing but my revolver.
+"""
+
+        print(textwrap.indent(message, "    "))
+        # indents each line with 4 spaces
+        #indented_message = textwrap.indent(message, print(indented_message))
+
+        print("\nThe post script catches your attention.")
+        print("You put down the letter and shuffle through the papers on the desk and through each drawer. \nFinally, in the second drawer, on the right side of the desk, lays the revolver, fully loaded and safety off. There is no sign of the rifle you saw in the photograph.")
+
+        if not found_revolver:
+            rooms["bedroom"]["items"].append("revolver")
+            found_revolver = True
+
+    # check for using revolver
+    elif item == "revolver":
+        if not found_revolver:
+            print("You don't know where the revolver is.")
+            return
+        
+        if bullet_count > 0:
+            bullet_count -= 1
+            print(f"The gun goes off! You now have {bullet_count} bullets left.")
+        else:
+            print("The revolver is empty.")
+
     else:
         print(f"You can't use the {item} here.")
 
@@ -194,6 +258,12 @@ def process_command(command):
 # === Game Loop ===
 def play_game():
     print("=== MURDER HOUSE SURVIVAL GAME ===")
+    print("\nAs you interact with your surroundings, your options in each room are: ") 
+    print("\n   - to TAKE, USE or DROP items, enter 'command + item' (ex. take key) ")
+    print("\n   - to LOOK at your surroundings, simply enter command 'look'")
+    print("\n   - to view your INVENTORY, simply type enter command 'inventory'")
+    print("\n   - to GO between rooms, enter 'go + direction' (ex. go east)")
+    print("\n   - to QUIT the game, simply enter 'quit'")
 
     playing = True
 
