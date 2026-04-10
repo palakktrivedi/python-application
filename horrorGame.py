@@ -9,7 +9,7 @@ rooms = {
         "bound": True
     },
     "hallway": {
-        "description": "A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers. \nUnder the lamp that flickers an ominous yellow light you see a glimmer of metal that appears to be a key!",
+        "description": "A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers. \nUnder the lamp that flickers an ominous yellow light, you see a glimmer of metal that appears to be a key!",
         "items": ["key"],
         "exits": {},
         "locked": True
@@ -42,18 +42,8 @@ current_room = "dining"
 def show_status():
     print("\n")
     print(f"You are in the {current_room}.")
-    print(rooms[current_room]["description"])
-    print(f"\nInventory: {inventory}")
 
-    if rooms[current_room]["items"]:
-        print(f"You see: {rooms[current_room]['items']}")
-
-    if current_room == "hallway":
-        if rooms["hallway"]["locked"]:
-            print("There is a locked door to the east.")
-        else:
-            print("there is an open door to the east.")
-
+    # dining room description changes after escape
     if current_room == "dining":
         if rooms["dining"]["bound"]:
             print("You wake up strapped into a chair at a dining table you don't recognize."
@@ -61,8 +51,24 @@ def show_status():
         else:
             print("You are standing in the dining room. The ropes that bound you lay torn on the chair behind you.")
     
+    # hallway description
+    elif current_room == "hallway":
+        print("A long hallway. There is a locked door at the end of the hall to the east. To your left is a chest of drawers.  \nUnder the lamp that flickers an ominous yellow light you see a glimmer of metal that appears to be a key!")
+
+        if rooms["hallway"]["locked"]:
+            print("Thre is a locked door to the east.")
+        else:
+            print("The door to the east is open.")
+
+    # all other rooms
     else:
         print(rooms[current_room]["description"])
+
+    print(f"\nInventory: {inventory}")
+
+    if rooms[current_room]["items"]:
+        print(f"You see: {rooms[current_room]['items']}")
+
 
 # gets the command from the user of what they want to do next
 def get_command():
@@ -159,6 +165,7 @@ def process_command(command):
         take_item(words[1])
 
     elif words[0] == "look":
+        print()
         show_status()
 
     elif words[0] == "inventory":
